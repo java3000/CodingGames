@@ -2,6 +2,7 @@ package sberfight;
 
 import java.util.*;
 import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 public class Eight {
 
@@ -59,44 +60,47 @@ getResult(rocket_pos, rocket_speed) = 2 // Ракеты никогда не со
      */
     public static void main(String[] args) {
         List<Integer> rocket_pos = new ArrayList<>();
-        rocket_pos.add(2);
         rocket_pos.add(3);
+        rocket_pos.add(11);
         List<Integer> rocket_speed = new ArrayList<>();
+        rocket_speed.add(5);
         rocket_speed.add(1);
-        rocket_speed.add(2);
 
         System.out.println(getResult(rocket_pos, rocket_speed));
     }
 
     public static int getResult(List<Integer> rocketPos, List<Integer> rocketSpeed) {
 
+        ArrayList<Integer> rp = new ArrayList<>();
+        rp.addAll(rocketPos);
+
+        ArrayList<Integer> rs = new ArrayList<>();
+        rs.addAll(rocketSpeed);
+
         while (true) {
-            for (int i = 0; i < rocketPos.size(); i++) {
-                rocketPos.set(i, rocketPos.get(i) + rocketSpeed.get(i));
+            for (int i = 0; i < rp.size(); i++) {
+                rp.set(i, rp.get(i) + rs.get(i));
             }
-            List<Integer> dublicates = rocketPos.stream()
-                    .filter(e -> Collections.frequency(rocketPos, e) > 1)
+            List<Integer> dublicates = rp.stream()
+                    .filter(e -> Collections.frequency(rp, e) > 1)
                     .distinct()
                     .collect(Collectors.toList());
 
+            List<Integer> dupind = new ArrayList<>();
             for(int d = 0; d < dublicates.size(); d++){
-                rocketPos.removeAll(List.of(dublicates.get(d)));
-                rocketPos.add(dublicates.get(d) * 2);
+                for (int r = 0; r < rp.size(); r++){
+                    if (dublicates.get(d).equals(rp.get(r))) dupind.add(r);
+                }
+
+                rp.removeAll(List.of(dublicates.get(d)));
+                rp.add(dublicates.get(d));
+
+                rs.add(rs.get(dupind.get(0)) * 2);
+                for (var q : dupind) rs.remove(q);
             }
 
-            if (rocketPos.stream().max(Integer::compare).get() > 2) break;
+            if (rp.stream().max(Integer::compare).get() > 1000) break;
         }
-
-        return rocketPos.size();
-    }
-
-    public static class Rocket {
-        int speed;
-        int position;
-
-        public Rocket(int speed, int position) {
-            this.speed = speed;
-            this.position = position;
-        }
+        return rp.size();
     }
 }
