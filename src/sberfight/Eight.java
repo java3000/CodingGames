@@ -1,6 +1,8 @@
 package sberfight;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 public class Eight {
 
@@ -57,10 +59,48 @@ getResult(rocket_pos, rocket_speed) = 2 // Ракеты никогда не со
 
      */
     public static void main(String[] args) {
+        List<Integer> rocket_pos = new ArrayList<>();
+        rocket_pos.add(3);
+        rocket_pos.add(11);
+        List<Integer> rocket_speed = new ArrayList<>();
+        rocket_speed.add(5);
+        rocket_speed.add(1);
 
+        System.out.println(getResult(rocket_pos, rocket_speed));
     }
 
     public static int getResult(List<Integer> rocketPos, List<Integer> rocketSpeed) {
-        return 0;
+
+        ArrayList<Integer> rp = new ArrayList<>();
+        rp.addAll(rocketPos);
+
+        ArrayList<Integer> rs = new ArrayList<>();
+        rs.addAll(rocketSpeed);
+
+        while (true) {
+            for (int i = 0; i < rp.size(); i++) {
+                rp.set(i, rp.get(i) + rs.get(i));
+            }
+            List<Integer> dublicates = rp.stream()
+                    .filter(e -> Collections.frequency(rp, e) > 1)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            List<Integer> dupind = new ArrayList<>();
+            for(int d = 0; d < dublicates.size(); d++){
+                for (int r = 0; r < rp.size(); r++){
+                    if (dublicates.get(d).equals(rp.get(r))) dupind.add(r);
+                }
+
+                rp.removeAll(List.of(dublicates.get(d)));
+                rp.add(dublicates.get(d));
+
+                rs.add(rs.get(dupind.get(0)) * 2);
+                for (var q : dupind) rs.remove(q);
+            }
+
+            if (rp.stream().max(Integer::compare).get() > 1000) break;
+        }
+        return rp.size();
     }
 }
